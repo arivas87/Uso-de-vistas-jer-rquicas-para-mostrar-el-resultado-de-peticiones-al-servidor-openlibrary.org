@@ -10,10 +10,10 @@
 		ACC445691CC5674E00908387 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC445681CC5674E00908387 /* AppDelegate.swift */; };
 		ACC4456C1CC5674E00908387 /* Mis_libros.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = ACC4456A1CC5674E00908387 /* Mis_libros.xcdatamodeld */; };
 		ACC4456E1CC5674E00908387 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC4456D1CC5674E00908387 /* MasterViewController.swift */; };
-		ACC445701CC5674E00908387 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC4456F1CC5674E00908387 /* DetailViewController.swift */; };
 		ACC445731CC5674E00908387 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC445711CC5674E00908387 /* Main.storyboard */; };
 		ACC445751CC5674E00908387 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACC445741CC5674E00908387 /* Assets.xcassets */; };
 		ACC445781CC5674E00908387 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC445761CC5674E00908387 /* LaunchScreen.storyboard */; };
+		ACD6BC8D1CC65646006C16C1 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD6BC8C1CC65646006C16C1 /* DetailViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,11 +21,11 @@
 		ACC445681CC5674E00908387 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ACC4456B1CC5674E00908387 /* Mis_libros.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Mis_libros.xcdatamodel; sourceTree = "<group>"; };
 		ACC4456D1CC5674E00908387 /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
-		ACC4456F1CC5674E00908387 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		ACC445721CC5674E00908387 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		ACC445741CC5674E00908387 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ACC445771CC5674E00908387 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ACC445791CC5674E00908387 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		ACD6BC8C1CC65646006C16C1 /* DetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,9 +58,9 @@
 		ACC445671CC5674E00908387 /* Mis libros */ = {
 			isa = PBXGroup;
 			children = (
+				ACD6BC8C1CC65646006C16C1 /* DetailViewController.swift */,
 				ACC445681CC5674E00908387 /* AppDelegate.swift */,
 				ACC4456D1CC5674E00908387 /* MasterViewController.swift */,
-				ACC4456F1CC5674E00908387 /* DetailViewController.swift */,
 				ACC445711CC5674E00908387 /* Main.storyboard */,
 				ACC445741CC5674E00908387 /* Assets.xcassets */,
 				ACC445761CC5674E00908387 /* LaunchScreen.storyboard */,
@@ -141,10 +141,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACD6BC8D1CC65646006C16C1 /* DetailViewController.swift in Sources */,
 				ACC4456C1CC5674E00908387 /* Mis_libros.xcdatamodeld in Sources */,
 				ACC445691CC5674E00908387 /* AppDelegate.swift in Sources */,
 				ACC4456E1CC5674E00908387 /* MasterViewController.swift in Sources */,
-				ACC445701CC5674E00908387 /* DetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,6 +296,7 @@
 				ACC4457E1CC5674E00908387 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

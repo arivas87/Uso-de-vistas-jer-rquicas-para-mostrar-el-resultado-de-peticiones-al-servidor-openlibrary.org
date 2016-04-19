@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-struct Libro {
+class Libro {
     var título: String
     var autor: String
     var portada: UIImage?
@@ -84,19 +84,23 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         alerta.addAction(UIAlertAction(title: "Buscar", style: UIAlertActionStyle.Default, handler: {(action) in
             self.obtenerLibro(campoTexto.text!)
             self.tableView.reloadData()
-            self.performSegueWithIdentifier("showDetail", sender: nil)
         }))
         
         presentViewController(alerta, animated: true, completion: nil)
     }
     
     func obtenerLibro(isbn: String) {
-        // TODO: Controlar que ese isbn no esté ya (mostrar alert y descartar)
+        let libro = colección.filter({ libro in libro.isbn == isbn })
+        if !libro.isEmpty {
+            self.performSegueWithIdentifier("showDetail", sender: libro.first)
+            return
+        }
         
         let url = NSURL(string: "https://openlibrary.org/api/books?jscmd=data&format=json&bibkeys=ISBN:" + isbn)
         
         do {
-            let respuesta = try NSJSONSerialization.JSONObjectWithData(NSData(contentsOfURL: url!)!, options: .MutableLeaves) as? [String: AnyObject]
+            let data = try NSData(contentsOfURL: url!, options: .DataReadingMappedIfSafe)
+            let respuesta = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves) as? [String: AnyObject]
             
             var losAutores: String = ""
             var elTítulo: String = ""
@@ -131,6 +135,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 }
                 
                 colección.append(Libro(título: elTítulo, autor: losAutores, portada: laImagen, isbn: isbn))
+                
+                self.performSegueWithIdentifier("showDetail", sender: nil)
             } else {
                 let alert = UIAlertController(title: "Error", message: "No hay ningún libro con ese ISBN", preferredStyle: UIAlertControllerStyle.Alert)
                 alert.addAction(UIAlertAction(title: "Aceptar", style: UIAlertActionStyle.Default, handler: nil))
@@ -148,18 +154,19 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showDetail" {
+            let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
+            let libro: Libro!
             if let indexPath = self.tableView.indexPathForSelectedRow {
                 //let object = self.fetchedResultsController.objectAtIndexPath(indexPath)
-                let object = self.colección[indexPath.row]
-                let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
-                controller.detailItem = object
-                controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
-                controller.navigationItem.leftItemsSupplementBackButton = true
+                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                libro = self.colección[indexPath.row]
+            } else if let mismoLibro = sender {
+                libro = mismoLibro as! Libro
+            } else {
+                libro = self.colección.last
             }
-        } else {
-            let object = self.colección.last
-            let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
-            controller.detailItem = object
+        
+            controller.detailItem = libro
             controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
             controller.navigationItem.leftItemsSupplementBackButton = true
         }
@@ -192,8 +199,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        /*if editingStyle == .Delete {
-            let context = self.fetchedResultsController.managedObjectContext
+        if editingStyle == .Delete {
+            /*let context = self.fetchedResultsController.managedObjectContext
             context.deleteObject(self.fetchedResultsController.objectAtIndexPath(indexPath) as! NSManagedObject)
                 
             do {
@@ -203,8 +210,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                 //print("Unresolved error \(error), \(error.userInfo)")
                 abort()
-            }
-        }*/
+            }*/
+            self.colección.removeAtIndex(indexPath.row)
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        }
+        //self.tableView.reloadData()
     }
 
     /*func configureCell(cell: UITableViewCell, withObject object: NSManagedObject) {
