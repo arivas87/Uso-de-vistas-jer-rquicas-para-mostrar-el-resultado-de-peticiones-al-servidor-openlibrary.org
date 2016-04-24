@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AC41CBF61CCCC93300CD8B35 /* Libro+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC41CBF41CCCC93300CD8B35 /* Libro+CoreDataProperties.swift */; };
+		AC41CBF71CCCC93300CD8B35 /* Libro.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC41CBF51CCCC93300CD8B35 /* Libro.swift */; };
 		ACC445691CC5674E00908387 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC445681CC5674E00908387 /* AppDelegate.swift */; };
 		ACC4456C1CC5674E00908387 /* Mis_libros.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = ACC4456A1CC5674E00908387 /* Mis_libros.xcdatamodeld */; };
 		ACC4456E1CC5674E00908387 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC4456D1CC5674E00908387 /* MasterViewController.swift */; };
@@ -17,6 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AC41CBF41CCCC93300CD8B35 /* Libro+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Libro+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		AC41CBF51CCCC93300CD8B35 /* Libro.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Libro.swift; sourceTree = "<group>"; };
 		ACC445651CC5674E00908387 /* Mis libros.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mis libros.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACC445681CC5674E00908387 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ACC4456B1CC5674E00908387 /* Mis_libros.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Mis_libros.xcdatamodel; sourceTree = "<group>"; };
@@ -58,6 +62,8 @@
 		ACC445671CC5674E00908387 /* Mis libros */ = {
 			isa = PBXGroup;
 			children = (
+				AC41CBF41CCCC93300CD8B35 /* Libro+CoreDataProperties.swift */,
+				AC41CBF51CCCC93300CD8B35 /* Libro.swift */,
 				ACD6BC8C1CC65646006C16C1 /* DetailViewController.swift */,
 				ACC445681CC5674E00908387 /* AppDelegate.swift */,
 				ACC4456D1CC5674E00908387 /* MasterViewController.swift */,
@@ -141,8 +147,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC41CBF71CCCC93300CD8B35 /* Libro.swift in Sources */,
 				ACD6BC8D1CC65646006C16C1 /* DetailViewController.swift in Sources */,
 				ACC4456C1CC5674E00908387 /* Mis_libros.xcdatamodeld in Sources */,
+				AC41CBF61CCCC93300CD8B35 /* Libro+CoreDataProperties.swift in Sources */,
 				ACC445691CC5674E00908387 /* AppDelegate.swift in Sources */,
 				ACC4456E1CC5674E00908387 /* MasterViewController.swift in Sources */,
 			);

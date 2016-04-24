@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class Libro {
+class LibroA {
     var título: String
     var autor: String
     var portada: UIImage?
@@ -26,20 +26,37 @@ class Libro {
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
 
     var detailViewController: DetailViewController? = nil
-    var managedObjectContext: NSManagedObjectContext? = nil
+    var managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     
-    var colección = [Libro]()
+    var colección = [LibroA]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
 
-        //let addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(MasterViewController.insertNewObject(_:)))
-        //self.navigationItem.rightBarButtonItem = addButton
         if let split = self.splitViewController {
             let controllers = split.viewControllers
             self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
+        }
+        
+        let petición = NSFetchRequest(entityName: "Libro")
+        do {
+            let datos = try managedObjectContext.executeFetchRequest(petición) as! [Libro]
+            
+            for dato in datos {
+                let imagen: UIImage?
+                if dato.portada != nil {
+                    imagen = UIImage(data: dato.portada!)
+                } else {
+                    imagen = nil
+                }
+                let libro = LibroA(título: dato.titulo!, autor: dato.autor!, portada: imagen, isbn: dato.isbn!)
+                colección.append(libro)
+            }
+        } catch {
+            let nserror = error as NSError
+            NSLog("Unresolved error \(nserror), \(nserror.userInfo)")
         }
     }
 
@@ -52,26 +69,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-    /*func insertNewObject(sender: AnyObject) {
-        let context = self.fetchedResultsController.managedObjectContext
-        let entity = self.fetchedResultsController.fetchRequest.entity!
-        let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName(entity.name!, inManagedObjectContext: context)
-             
-        // If appropriate, configure the new managed object.
-        // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
-        newManagedObject.setValue(NSDate(), forKey: "timeStamp")
-             
-        // Save the context.
-        do {
-            try context.save()
-        } catch {
-            // Replace this implementation with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            //print("Unresolved error \(error), \(error.userInfo)")
-            abort()
-        }
-    }*/
     
     @IBAction func insertarNuevoLibro(sender: AnyObject) {
         var campoTexto: UITextField!
@@ -108,6 +105,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
             if respuesta != nil && !respuesta!.isEmpty {
                 
+                let libroData = NSEntityDescription.insertNewObjectForEntityForName("Libro", inManagedObjectContext: managedObjectContext) as! Libro
+                
                 var autores = respuesta!["ISBN:\(isbn)"]!["authors"] as? [[String: String]]
                 if autores != nil {
                     
@@ -129,12 +128,27 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 if cover != nil {
                     let imagenUrl = cover!["medium"]! as String
                     
-                    laImagen = UIImage(data: NSData(contentsOfURL: NSURL(string: imagenUrl)!)!)
+                    libroData.portada = NSData(contentsOfURL: NSURL(string: imagenUrl)!)
+                    laImagen = UIImage(data: libroData.portada!)
+                    
                 } else {
                     laImagen = nil
+                    libroData.portada = nil
                 }
                 
-                colección.append(Libro(título: elTítulo, autor: losAutores, portada: laImagen, isbn: isbn))
+                let libro = LibroA(título: elTítulo, autor: losAutores, portada: laImagen, isbn: isbn)
+                colección.append(libro)
+                
+                libroData.autor = libro.autor
+                libroData.titulo = libro.título
+                libroData.isbn = libro.isbn
+                
+                do {
+                    try managedObjectContext.save()
+                } catch {
+                    let nserror = error as NSError
+                    NSLog("Unresolved error \(nserror), \(nserror.userInfo)")
+                }
                 
                 self.performSegueWithIdentifier("showDetail", sender: nil)
             } else {
@@ -155,13 +169,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showDetail" {
             let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
-            let libro: Libro!
+            let libro: LibroA!
             if let indexPath = self.tableView.indexPathForSelectedRow {
                 //let object = self.fetchedResultsController.objectAtIndexPath(indexPath)
                 self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
                 libro = self.colección[indexPath.row]
             } else if let mismoLibro = sender {
-                libro = mismoLibro as! Libro
+                libro = mismoLibro as! LibroA
             } else {
                 libro = self.colección.last
             }
@@ -180,126 +194,42 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        /*let sectionInfo = self.fetchedResultsController.sections![section]
-        return sectionInfo.numberOfObjects*/
         return colección.count
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath)
-        /*let object = self.fetchedResultsController.objectAtIndexPath(indexPath) as! NSManagedObject
-        self.configureCell(cell, withObject: object)*/
         cell.textLabel?.text = colección[indexPath.row].título
         return cell
     }
 
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
         return true
     }
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
-            /*let context = self.fetchedResultsController.managedObjectContext
-            context.deleteObject(self.fetchedResultsController.objectAtIndexPath(indexPath) as! NSManagedObject)
-                
+            let isbn = self.colección[indexPath.row].isbn
+            
+            let entidad = NSEntityDescription.entityForName("Libro", inManagedObjectContext: managedObjectContext)
+            let petición = entidad?.managedObjectModel.fetchRequestFromTemplateWithName("petIsbn", substitutionVariables: ["isbn": isbn])
+            
             do {
-                try context.save()
+                let datos = try managedObjectContext.executeFetchRequest(petición!) as! [Libro]
+                
+                managedObjectContext.deleteObject(datos.first!)
+                
+                try managedObjectContext.save()
             } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                //print("Unresolved error \(error), \(error.userInfo)")
-                abort()
-            }*/
+                let nserror = error as NSError
+                NSLog("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
+            
             self.colección.removeAtIndex(indexPath.row)
+            
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         }
-        //self.tableView.reloadData()
     }
-
-    /*func configureCell(cell: UITableViewCell, withObject object: NSManagedObject) {
-        cell.textLabel!.text = object.valueForKey("timeStamp")!.description
-    }*/
-
-    // MARK: - Fetched results controller
-
-    /*var fetchedResultsController: NSFetchedResultsController {
-        if _fetchedResultsController != nil {
-            return _fetchedResultsController!
-        }
-        
-        let fetchRequest = NSFetchRequest()
-        // Edit the entity name as appropriate.
-        let entity = NSEntityDescription.entityForName("Event", inManagedObjectContext: self.managedObjectContext!)
-        fetchRequest.entity = entity
-        
-        // Set the batch size to a suitable number.
-        fetchRequest.fetchBatchSize = 20
-        
-        // Edit the sort key as appropriate.
-        let sortDescriptor = NSSortDescriptor(key: "timeStamp", ascending: false)
-        
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        
-        // Edit the section name key path and cache name if appropriate.
-        // nil for section name key path means "no sections".
-        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: "Master")
-        aFetchedResultsController.delegate = self
-        _fetchedResultsController = aFetchedResultsController
-        
-        do {
-            try _fetchedResultsController!.performFetch()
-        } catch {
-             // Replace this implementation with code to handle the error appropriately.
-             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. 
-             //print("Unresolved error \(error), \(error.userInfo)")
-             abort()
-        }
-        
-        return _fetchedResultsController!
-    }    
-    var _fetchedResultsController: NSFetchedResultsController? = nil
-
-    func controllerWillChangeContent(controller: NSFetchedResultsController) {
-        self.tableView.beginUpdates()
-    }
-
-    func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
-        switch type {
-            case .Insert:
-                self.tableView.insertSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
-            case .Delete:
-                self.tableView.deleteSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
-            default:
-                return
-        }
-    }
-
-    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-        switch type {
-            case .Insert:
-                tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)
-            case .Delete:
-                tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
-            case .Update:
-                self.configureCell(tableView.cellForRowAtIndexPath(indexPath!)!, withObject: anObject as! NSManagedObject)
-            case .Move:
-                tableView.moveRowAtIndexPath(indexPath!, toIndexPath: newIndexPath!)
-        }
-    }
-
-    func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        self.tableView.endUpdates()
-    }*/
-
-    /*
-     // Implementing the above methods to update the table view in response to individual changes may have performance implications if a large number of changes are made simultaneously. If this proves to be an issue, you can instead just implement controllerDidChangeContent: which notifies the delegate that all section and object changes have been processed.
-     
-     func controllerDidChangeContent(controller: NSFetchedResultsController) {
-         // In the simplest, most efficient, case, reload the table view.
-         self.tableView.reloadData()
-     }
-     */
 
 }
 

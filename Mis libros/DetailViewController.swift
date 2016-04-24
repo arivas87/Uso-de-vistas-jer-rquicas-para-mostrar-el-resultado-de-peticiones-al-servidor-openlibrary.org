@@ -14,7 +14,7 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var autoresLabel: UILabel!
     @IBOutlet weak var portadaImage: UIImageView!
     
-    var detailItem: Libro? {
+    var detailItem: LibroA? {
         didSet {
             // Update the view.
             self.configureView()
